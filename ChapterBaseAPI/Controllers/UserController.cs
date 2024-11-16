@@ -1,83 +1,37 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ChapterBaseAPI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChapterBaseAPI.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
+    [Authorize]
     public class UserController : Controller
     {
-        // GET: UserController
-        public ActionResult Index()
+    
+        private readonly UserService _userService;
+
+        public UserController(UserService userService)
         {
-            return View();
+            _userService = userService;
         }
 
-        // GET: UserController/Details/5
-        public ActionResult Details(int id)
+        [HttpGet(Name = "GetUser")]
+        
+        public IActionResult Get()
         {
-            return View();
+            return Ok(_userService.GetAllUsers());
         }
 
-        // GET: UserController/Create
-        public ActionResult Create()
+        // create a post request to save user, get idToken from request params
+        [HttpPost(Name = "SaveUser")]
+        public IActionResult Post([FromQuery] string idToken)
         {
-            return View();
+            _userService.save(idToken);
+            return Ok();
         }
-
-        // POST: UserController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+       
     }
 }
