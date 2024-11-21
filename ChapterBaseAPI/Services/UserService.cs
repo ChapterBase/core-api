@@ -16,25 +16,22 @@ namespace ChapterBaseAPI.Services
             this._jwtUtilService = jwtUtilService;
         }
 
-        public void save(String idToken)
-        {
-            UserDto UserDto = _jwtUtilService.DecodeToken(idToken);
-            Users User = _userRepository.FindByEmail(UserDto.Email);
+        public void Save(UserDto userDto) 
+        {       
+            Users User = _userRepository.FindByEmail(userDto.Email);
 
             if (User != null) return;
 
             _userRepository.Save(
                 new Users
                 {
-                    Username = UserDto.Username,
-                    Email = UserDto.Email,
-                    Role = "USER",
+                    Username = userDto.Username,
+                    Email = userDto.Email,
+                    Role = userDto.Role,
                     Status = "ACTIVE",
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 });
-
-
         }
 
         public List<UserDto> GetAllUsers()

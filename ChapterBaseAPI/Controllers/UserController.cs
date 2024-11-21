@@ -1,4 +1,5 @@
-﻿using ChapterBaseAPI.Services;
+﻿using ChapterBaseAPI.Dtos;
+using ChapterBaseAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,13 +24,14 @@ namespace ChapterBaseAPI.Controllers
             return Ok(_userService.GetAllUsers());
         }
 
-        // create a post request to save user, get idToken from request params
+        
         [HttpPost]
-        public IActionResult Post([FromQuery] string idToken)
+        public IActionResult Post([FromBody] UserDto userDto)
         {
-            _userService.save(idToken);
+            _userService.Save(userDto);
             return Ok();
         }
-       
+
+
     }
 }
