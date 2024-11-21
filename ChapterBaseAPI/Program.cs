@@ -1,6 +1,7 @@
 using ChapterBaseAPI.Repositories;
 using ChapterBaseAPI.Services;
 using ChapterBaseAPI.Data;
+using admin_bff.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +10,13 @@ builder.Services.AddControllers();
 
 // Register services
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<BookService>();
 builder.Services.AddSingleton<JwtUtilService>();
 
 // Register repositories
 builder.Services.AddSingleton<ApplicationDBContext>();
 builder.Services.AddSingleton<UserRepository>();
+builder.Services.AddSingleton<BookRepository>();
 
 // Configure CORS to allow all
 builder.Services.AddCors(options =>
@@ -31,6 +34,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

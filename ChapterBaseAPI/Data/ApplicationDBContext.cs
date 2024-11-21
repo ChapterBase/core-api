@@ -17,6 +17,7 @@ namespace ChapterBaseAPI.Data
         }
 
         public DbSet<Users> Users{ get; set; }
+        public DbSet<Book> Books { get; set; }
         
     }
 }
