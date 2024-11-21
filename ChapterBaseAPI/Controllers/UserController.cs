@@ -7,7 +7,6 @@ namespace ChapterBaseAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
     public class UserController : Controller
     {
     
@@ -18,15 +17,14 @@ namespace ChapterBaseAPI.Controllers
             _userService = userService;
         }
 
-        [HttpGet(Name = "GetUser")]
-        
+        [HttpGet]
         public IActionResult Get()
         {
             return Ok(_userService.GetAllUsers());
         }
 
         // create a post request to save user, get idToken from request params
-        [HttpPost(Name = "SaveUser")]
+        [HttpPost]
         public IActionResult Post([FromQuery] string idToken)
         {
             _userService.save(idToken);
