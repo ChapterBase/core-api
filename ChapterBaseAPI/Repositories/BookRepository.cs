@@ -14,8 +14,13 @@ namespace ChapterBaseAPI.Repositories
 
         internal List<Book> FindAll(int page, int size)
         {
-            return _dbContext.Books.Skip(page * size).Take(size).ToList();
+            return _dbContext.Books
+                .OrderByDescending(b => b.UpdatedAt)
+                .Skip(page * size)
+                .Take(size)
+                .ToList();
         }
+
 
         internal Book FindById(Guid id)
         {

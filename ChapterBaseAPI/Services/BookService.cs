@@ -149,6 +149,7 @@ namespace ChapterBaseAPI.Services
                 Publisher = book.Publisher,
                 Quantity = book.Quantity,
                 Price = book.Price,
+                Status = book.Status,
                 PublishedDate = book.PublishedDate,
                 CreatedAt = book.CreatedAt,
                 UpdatedAt = book.UpdatedAt
