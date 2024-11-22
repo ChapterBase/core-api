@@ -2,27 +2,33 @@
 using ChapterBaseAPI.Data;
 using ChapterBaseAPI.Dtos;
 
-
-
 namespace ChapterBaseAPI.Repositories
 {
-    public class UserRepository
+    public class UserRepository(ApplicationDBContext _dbContext)
     {
-        private readonly ApplicationDBContext _dbContext;
-
-        public UserRepository(ApplicationDBContext dbContext)
+        internal void Save(Users user)
         {
-            _dbContext = dbContext;
+            _dbContext.Add(user);
+            _dbContext.SaveChanges();
         }
-
-        public IEnumerable<Users> GetAllUsers()
+        internal void Update(Users user)
         {
-            return _dbContext.Users.ToList();
+            _dbContext.Update(user);
+            _dbContext.SaveChanges();
         }
-
-        public Users? GetUserById(Guid id)
+        
+        public Users? FindById(Guid id)
         {
             return _dbContext.Users.FirstOrDefault(u => u.Id == id);
+        }
+
+        internal List<Users> FindAllByRole(string role)
+        {
+            return _dbContext.Users
+                .OrderByDescending(u => u.UpdatedAt)
+                .Where(u => u.Role == role)
+                .ToList();
+
         }
 
         internal Users? FindByEmail(string email)
@@ -30,10 +36,5 @@ namespace ChapterBaseAPI.Repositories
             return _dbContext.Users.FirstOrDefault(u => u.Email == email);
         }
 
-        internal void Save(Users user)
-        {
-            _dbContext.Add(user);
-            _dbContext.SaveChanges();
-        }
     }
 }
