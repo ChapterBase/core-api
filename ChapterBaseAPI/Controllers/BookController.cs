@@ -18,8 +18,7 @@ namespace ChapterBaseAPI.Controllers
         [HttpPost]
         public IActionResult Save([FromBody] BookDto bookDto)
         {
-            _bookService.Save(bookDto);
-            return Ok();
+            return Ok(_bookService.Save(bookDto));
         }
     }
 }

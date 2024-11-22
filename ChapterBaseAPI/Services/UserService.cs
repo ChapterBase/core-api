@@ -16,11 +16,19 @@ namespace ChapterBaseAPI.Services
             this._jwtUtilService = jwtUtilService;
         }
 
-        public void Save(UserDto userDto) 
-        {       
+        public ResponseDto<object> Save(UserDto userDto)
+        {
             Users User = _userRepository.FindByEmail(userDto.Email);
 
-            if (User != null) return;
+            if (User != null)
+            {
+                return new ResponseDto<object>
+                {
+                    Success = false,
+                    Message = "User already exists for email " + userDto.Email,
+                    Data = null
+                };
+            }
 
             _userRepository.Save(
                 new Users
@@ -32,25 +40,13 @@ namespace ChapterBaseAPI.Services
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 });
-        }
 
-        public List<UserDto> GetAllUsers()
-        {
-
-            IEnumerable<Users> enumerable = _userRepository.GetAllUsers();
-
-            List<UserDto> userDtos = _userRepository.GetAllUsers()
-                 .Select(user => new UserDto
-                 {
-                     Id = user.Id,
-                     Username = user.Username,
-                     Email = user.Email,
-                 }
-                 ).ToList();
-            System.Console.WriteLine("Database returned user list");
-            System.Console.WriteLine(userDtos);
-
-            return userDtos;
+            return new ResponseDto<object>
+            {
+                Success = true,
+                Message = "User created successfully",
+                Data = null
+            };
         }
 
     }

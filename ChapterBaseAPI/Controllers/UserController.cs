@@ -8,7 +8,7 @@ namespace ChapterBaseAPI.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
-    
+
         private readonly UserService _userService;
 
         public UserController(UserService userService)
@@ -16,20 +16,10 @@ namespace ChapterBaseAPI.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok(_userService.GetAllUsers());
-        }
-
-        
         [HttpPost]
-        public IActionResult Post([FromBody] UserDto userDto)
+        public IActionResult Save([FromBody] UserDto userDto)
         {
-            _userService.Save(userDto);
-            return Ok();
+            return Ok(_userService.Save(userDto));
         }
-
-
     }
 }

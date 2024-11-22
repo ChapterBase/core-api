@@ -14,12 +14,19 @@ namespace ChapterBaseAPI.Services
             this._bookRepository = bookRepository;
         }
 
-        public void Save(BookDto bookDto)
+        public ResponseDto<object> Save(BookDto bookDto)
         {
             Book book = _bookRepository.FindByISBN(bookDto.ISBN);
 
-            if (book != null) return;
-            
+            if (book != null)
+            {
+                return new ResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Book already exists for ISBN " + bookDto.ISBN,
+                    Data = null
+                };
+            }
             _bookRepository.Save(
                 new Book
                 {
@@ -32,8 +39,14 @@ namespace ChapterBaseAPI.Services
                     PublishedDate = bookDto.PublishedDate,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
-                    
+
                 });
+            return new ResponseDto<object>
+            {
+                Success = true,
+                Message = "Book created successfully",
+                Data = null
+            };
         }
 
     }
