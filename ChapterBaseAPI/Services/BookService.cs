@@ -1,162 +1,151 @@
-﻿using admin_bff.Exceptions;
+﻿using admin_bff.Dtos;
 using ChapterBaseAPI.Dtos;
 using ChapterBaseAPI.Models;
 using ChapterBaseAPI.Repositories;
 
-namespace ChapterBaseAPI.Services
+namespace ChapterBaseAPI.Services;
+
+public class BookService(BookRepository bookRepository)
 {
-    public class BookService
+    public ResponseDto<object> Save(BookDto bookDto)
     {
-        private readonly BookRepository _bookRepository;
+        var book = bookRepository.FindByIsbn(bookDto.ISBN);
 
-        public BookService(BookRepository bookRepository)
-        {
-            this._bookRepository = bookRepository;
-        }
-
-        public ResponseDto<object> Save(BookDto bookDto)
-        {
-            Book book = _bookRepository.FindByISBN(bookDto.ISBN);
-
-            if (book != null)
-            {
-                return new ResponseDto<object>
-                {
-                    Success = false,
-                    Message = "Book already exists for ISBN " + bookDto.ISBN
-                };
-            }
-            _bookRepository.Save(
-                new Book
-                {
-                    Title = bookDto.Title,
-                    Author = bookDto.Author,
-                    ISBN = bookDto.ISBN,
-                    Publisher = bookDto.Publisher,
-                    Quantity = bookDto.Quantity,
-                    Price = bookDto.Price,
-                    Status = "PREVIEW",
-                    PublishedDate = bookDto.PublishedDate,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
-
-                });
+        if (book != null)
             return new ResponseDto<object>
             {
-                Success = true,
-                Message = "Book created successfully"
+                Success = false,
+                Message = "Book already exists for ISBN " + bookDto.ISBN
             };
-        }
-
-        public ResponseDto<object> Update(BookDto bookDto)
-        {
-            Book book = _bookRepository.FindById(bookDto.Id);
-
-            if (book == null)
+        bookRepository.Save(
+            new Book
             {
-                return new ResponseDto<object>
-                {
-                    Success = false,
-                    Message = "Book not found"
-                };
-            }
+                Title = bookDto.Title,
+                Author = bookDto.Author,
+                ISBN = bookDto.ISBN,
+                Publisher = bookDto.Publisher,
+                Quantity = bookDto.Quantity,
+                Price = bookDto.Price,
+                Status = "PREVIEW",
+                PublishedDate = bookDto.PublishedDate,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            });
+        return new ResponseDto<object>
+        {
+            Success = true,
+            Message = "Book created successfully"
+        };
+    }
 
-            book.Title = bookDto.Title;
-            book.Author = bookDto.Author;
-            book.Publisher = bookDto.Publisher;
-            book.Quantity = bookDto.Quantity;
-            book.Price = bookDto.Price;
-            book.Status = bookDto.Status;
-            book.PublishedDate = bookDto.PublishedDate;
-            book.UpdatedAt = DateTime.Now;
+    public ResponseDto<object> Update(BookDto bookDto)
+    {
+        var book = bookRepository.FindById(bookDto.Id);
 
-            _bookRepository.Update(book);
-
+        if (book == null)
             return new ResponseDto<object>
             {
-                Success = true,
-                Message = "Book updated successfully"
+                Success = false,
+                Message = "Book not found"
             };
-        }
 
-        public ResponseDto<object> FindAll(int page, int size)
+        book.Title = bookDto.Title;
+        book.Author = bookDto.Author;
+        book.Publisher = bookDto.Publisher;
+        book.Quantity = bookDto.Quantity;
+        book.Price = bookDto.Price;
+        book.Status = bookDto.Status;
+        book.PublishedDate = bookDto.PublishedDate;
+        book.UpdatedAt = DateTime.Now;
+
+        bookRepository.Update(book);
+
+        return new ResponseDto<object>
         {
+            Success = true,
+            Message = "Book updated successfully"
+        };
+    }
+
+    public ResponseDto<object> FindAll(RequestDto request)
+    {
+        List<BookDto> books;
+        if ("ALL".Equals(request.Status))
+            books = bookRepository
+                .FindAll(request.Page, request.Size)
+                .Select(ConvertBook)
+                .ToList();
+        else
+            books = bookRepository
+                .FindAllByStatus(request.Status)
+                .Select(ConvertBook)
+                .ToList();
+        return new ResponseDto<object>
+        {
+            Success = true,
+            Data = books
+        };
+    }
+
+    public ResponseDto<object> FindById(Guid id)
+    {
+        var book = bookRepository.FindById(id);
+
+        if (book == null)
             return new ResponseDto<object>
             {
-                Success = true,
-                Data = _bookRepository
-                .FindAll(page, size)
-                .Select(book => convertBook(book))
-                .ToList()
-
+                Success = false,
+                Message = "Book not found"
             };
-        }
 
-        public ResponseDto<object> FindById(Guid id)
+        return new ResponseDto<object>
         {
-            Book book = _bookRepository.FindById(id);
+            Success = true,
+            Data = ConvertBook(book)
+        };
+    }
 
-            if (book == null)
-            {
-                return new ResponseDto<object>
-                {
-                    Success = false,
-                    Message = "Book not found"
-                };
-            }
+    public ResponseDto<object> Delete(Guid id)
+    {
+        var book = bookRepository.FindById(id);
 
+        if (book == null)
             return new ResponseDto<object>
             {
-                Success = true,
-                Data = convertBook(book)
+                Success = false,
+                Message = "Book not found"
             };
-        }
 
-        public ResponseDto<object> Delete(Guid id)
+        book.Status = "DELETED";
+        book.UpdatedAt = DateTime.Now;
+
+        bookRepository.Update(book);
+
+        return new ResponseDto<object>
         {
-            Book book = _bookRepository.FindById(id);
+            Success = true,
+            Message = "Book deleted successfully"
+        };
+    }
 
-            if (book == null)
-            {
-                return new ResponseDto<object>
-                {
-                    Success = false,
-                    Message = "Book not found"
-                };
-            }
 
-            book.Status = "DELETED";
-            book.UpdatedAt = DateTime.Now;
-
-            _bookRepository.Update(book);
-
-            return new ResponseDto<object>
-            {
-                Success = true,
-                Message = "Book deleted successfully"
-            };
-        }
-        
-
-        private BookDto convertBook(Book book)
+    private static BookDto ConvertBook(Book? book)
+    {
+        if (book == null)
+            return new BookDto();
+        return new BookDto
         {
-            return new BookDto
-            {
-                Id = book.Id,
-                Title = book.Title,
-                Author = book.Author,
-                ISBN = book.ISBN,
-                Publisher = book.Publisher,
-                Quantity = book.Quantity,
-                Price = book.Price,
-                Status = book.Status,
-                PublishedDate = book.PublishedDate,
-                CreatedAt = book.CreatedAt,
-                UpdatedAt = book.UpdatedAt
-            };
-        }
-
-
-
+            Id = book.Id,
+            Title = book.Title,
+            Author = book.Author,
+            ISBN = book.ISBN,
+            Publisher = book.Publisher,
+            Quantity = book.Quantity,
+            Price = book.Price,
+            Status = book.Status,
+            PublishedDate = book.PublishedDate,
+            CreatedAt = book.CreatedAt,
+            UpdatedAt = book.UpdatedAt
+        };
     }
 }

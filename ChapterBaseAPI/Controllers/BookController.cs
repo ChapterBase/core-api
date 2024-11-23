@@ -1,4 +1,5 @@
-﻿using ChapterBaseAPI.Dtos;
+﻿using admin_bff.Dtos;
+using ChapterBaseAPI.Dtos;
 using ChapterBaseAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,10 +28,10 @@ namespace ChapterBaseAPI.Controllers
             return Ok(_bookService.Update(bookDto));
         }
 
-        [HttpGet]
-        public IActionResult FindAll([FromQuery] int page, [FromQuery] int size)
+        [HttpPost("All")]
+        public IActionResult FindAll([FromBody] RequestDto request)
         {
-            return Ok(_bookService.FindAll(page, size));
+            return Ok(_bookService.FindAll(request));
         }
 
         [HttpGet("{id}")]

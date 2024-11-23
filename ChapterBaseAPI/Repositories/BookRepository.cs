@@ -3,45 +3,41 @@ using ChapterBaseAPI.Models;
 
 namespace ChapterBaseAPI.Repositories
 {
-    public class BookRepository
+    public class BookRepository(ApplicationDBContext dbContext)
     {
-        private readonly ApplicationDBContext _dbContext;
-
-        public BookRepository(ApplicationDBContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
         internal List<Book> FindAll(int page, int size)
         {
-            return _dbContext.Books
+            return dbContext.Books
                 .OrderByDescending(b => b.UpdatedAt)
                 .Skip(page * size)
                 .Take(size)
                 .ToList();
         }
 
-
-        internal Book FindById(Guid id)
+        internal List<Book?> FindAllByStatus(string status)
         {
-            return _dbContext.Books.FirstOrDefault(b => b.Id == id);
+            return dbContext.Books
+                .Where(b => b != null && b.Status == status)
+                .ToList();
         }
 
-        internal Book FindByISBN(string iSBN)
-        {
-            return _dbContext.Books.FirstOrDefault(b => b.ISBN == iSBN);
-        }
+
+        internal Book? FindById(Guid id) => dbContext.Books.FirstOrDefault(b => b != null && b.Id == id);
+
+
+
+        internal Book? FindByIsbn(string iSbn) => dbContext.Books.FirstOrDefault(b => b != null && b.ISBN.Equals(iSbn));
 
         internal void Save(Book book)
         {
-            _dbContext.Add(book);
-            _dbContext.SaveChanges();
+            dbContext.Add(book);
+            dbContext.SaveChanges();
         }
 
         internal void Update(Book book)
         {
-            _dbContext.Update(book);
-            _dbContext.SaveChanges();
+            dbContext.Update(book);
+            dbContext.SaveChanges();
         }
     }
 }
