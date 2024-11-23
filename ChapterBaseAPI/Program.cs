@@ -9,14 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Register services
-builder.Services.AddSingleton<UserService>();
-builder.Services.AddSingleton<BookService>();
-builder.Services.AddSingleton<JwtUtilService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<JwtUtilService>();
 
 // Register repositories
-builder.Services.AddSingleton<ApplicationDBContext>();
-builder.Services.AddSingleton<UserRepository>();
-builder.Services.AddSingleton<BookRepository>();
+builder.Services.AddScoped<ApplicationDBContext>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<BookRepository>();
 
 // Configure CORS to allow all
 builder.Services.AddCors(options =>
