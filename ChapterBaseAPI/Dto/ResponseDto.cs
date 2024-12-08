@@ -1,4 +1,4 @@
-﻿namespace ChapterBaseAPI.Dtos
+﻿namespace ChapterBaseAPI.Dto
 {
     public class ResponseDto<T>
     {

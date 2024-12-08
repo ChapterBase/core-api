@@ -6,17 +6,26 @@ using admin_bff.Exceptions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers(options =>
+{
+    // Remove the automatic model validation filter
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
+
+// Add services to the container.
 builder.Services.AddControllers();
 
 // Register services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<BannerService>();
 builder.Services.AddScoped<JwtUtilService>();
 
 // Register repositories
 builder.Services.AddScoped<ApplicationDBContext>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<BookRepository>();
+builder.Services.AddScoped<BannerRepository>();
 
 // Configure CORS to allow all
 builder.Services.AddCors(options =>

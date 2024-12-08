@@ -3,20 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ChapterBaseAPI.Models
 {
-    public class Book
+    public class Banner
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public string Title { get; set; }
-        public string Author { get; set; }
-        public string ISBN { get; set; }
-        public string Publisher { get; set; }
-        public int Quantity { get; set; }
-        public decimal Price { get; set; }
+        public string Description { get; set; }
         public string Status { get; set; }
         public byte[] Image { get; set; }
-        public DateTime PublishedDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

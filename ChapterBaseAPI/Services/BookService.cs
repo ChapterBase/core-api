@@ -1,7 +1,9 @@
-﻿using admin_bff.Dtos;
-using ChapterBaseAPI.Dtos;
+﻿using admin_bff.Dto;
+using ChapterBaseAPI.Dto;
+using ChapterBaseAPI.Migrations;
 using ChapterBaseAPI.Models;
 using ChapterBaseAPI.Repositories;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace ChapterBaseAPI.Services;
 
@@ -17,6 +19,7 @@ public class BookService(BookRepository bookRepository)
                 Success = false,
                 Message = "Book already exists for ISBN " + bookDto.ISBN
             };
+
         bookRepository.Save(
             new Book
             {
@@ -26,11 +29,13 @@ public class BookService(BookRepository bookRepository)
                 Publisher = bookDto.Publisher,
                 Quantity = bookDto.Quantity,
                 Price = bookDto.Price,
+                Image = bookDto.Image,
                 Status = "PREVIEW",
                 PublishedDate = bookDto.PublishedDate,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             });
+
         return new ResponseDto<object>
         {
             Success = true,
@@ -38,8 +43,11 @@ public class BookService(BookRepository bookRepository)
         };
     }
 
+
     public ResponseDto<object> Update(BookDto bookDto)
     {
+        ValidateRequest(bookDto);
+
         var book = bookRepository.FindById(bookDto.Id);
 
         if (book == null)
@@ -55,6 +63,7 @@ public class BookService(BookRepository bookRepository)
         book.Quantity = bookDto.Quantity;
         book.Price = bookDto.Price;
         book.Status = bookDto.Status;
+        book.Image = bookDto.Image;
         book.PublishedDate = bookDto.PublishedDate;
         book.UpdatedAt = DateTime.Now;
 
@@ -65,6 +74,20 @@ public class BookService(BookRepository bookRepository)
             Success = true,
             Message = "Book updated successfully"
         };
+    }
+
+    private static void ValidateRequest(BookDto bookDto)
+    {
+        if (bookDto.Id == Guid.Empty)
+            throw new Exception("Book ID is required");
+
+        if (string.IsNullOrEmpty(bookDto.Title))
+            throw new Exception("Book title is required");
+
+        if (string.IsNullOrEmpty(bookDto.Author))
+            throw new Exception("Book author is required");
+
+        
     }
 
     public ResponseDto<object> FindAll(RequestDto request)
@@ -143,6 +166,7 @@ public class BookService(BookRepository bookRepository)
             Quantity = book.Quantity,
             Price = book.Price,
             Status = book.Status,
+            Image = book.Image,
             PublishedDate = book.PublishedDate,
             CreatedAt = book.CreatedAt,
             UpdatedAt = book.UpdatedAt

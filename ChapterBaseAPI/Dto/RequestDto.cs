@@ -1,4 +1,4 @@
-﻿namespace admin_bff.Dtos
+﻿namespace admin_bff.Dto
 {
     public class RequestDto
     {

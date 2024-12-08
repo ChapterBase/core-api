@@ -1,4 +1,4 @@
-﻿using ChapterBaseAPI.Dtos;
+﻿using ChapterBaseAPI.Dto;
 using ChapterBaseAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
