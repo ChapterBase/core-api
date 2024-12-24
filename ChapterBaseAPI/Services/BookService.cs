@@ -87,7 +87,7 @@ public class BookService(BookRepository bookRepository)
         if (string.IsNullOrEmpty(bookDto.Author))
             throw new Exception("Book author is required");
 
-        
+
     }
 
     public ResponseDto<object> FindAll(RequestDto request)
@@ -151,6 +151,20 @@ public class BookService(BookRepository bookRepository)
         };
     }
 
+    public ResponseDto<object> Search(string query)
+    {
+        return new ResponseDto<object>
+        {
+            Success = true,
+            Data = bookRepository
+                .FindAllByStatus("PUBLISH")
+                .Where(b => (b.Title.Contains(query) || b.Author.Contains(query) || b.Publisher.Contains(query)))
+                .Select(ConvertBook)
+                .ToList()
+
+        };
+    }
+
 
     private static BookDto ConvertBook(Book? book)
     {
@@ -172,4 +186,6 @@ public class BookService(BookRepository bookRepository)
             UpdatedAt = book.UpdatedAt
         };
     }
+
+
 }

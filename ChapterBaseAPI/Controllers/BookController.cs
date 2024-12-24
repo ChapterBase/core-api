@@ -39,5 +39,11 @@ namespace ChapterBaseAPI.Controllers
         {
             return Ok(bookService.Delete(id));
         }
+
+        [HttpGet("Search")]
+        public IActionResult Search([FromQuery] string query)
+        {
+            return Ok(bookService.Search(query));
+        }
     }
 }

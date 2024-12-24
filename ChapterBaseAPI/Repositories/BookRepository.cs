@@ -14,10 +14,10 @@ namespace ChapterBaseAPI.Repositories
                 .ToList();
         }
 
-        internal List<Book?> FindAllByStatus(string status)
+        internal List<Book> FindAllByStatus(string status)
         {
             return dbContext.Books
-                .Where(b => b != null && b.Status == status)
+                .Where(b => b.Status == status)
                 .ToList();
         }
 
