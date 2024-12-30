@@ -5,6 +5,10 @@ namespace ChapterBaseAPI.Repositories
 {
     public class BookRepository(ApplicationDBContext dbContext)
     {
+
+        internal List<Book> FindAll() => dbContext.Books.ToList();
+        internal List<Book> FindAll(string status) => dbContext.Books.Where(b => b.Status == status).ToList();
+        
         internal List<Book> FindAll(int page, int size)
         {
             return dbContext.Books
@@ -13,13 +17,8 @@ namespace ChapterBaseAPI.Repositories
                 .Take(size)
                 .ToList();
         }
-
-        internal List<Book> FindAllByStatus(string status)
-        {
-            return dbContext.Books
-                .Where(b => b.Status == status)
-                .ToList();
-        }
+        
+       
 
 
         internal Book? FindById(Guid id) => dbContext.Books.FirstOrDefault(b => b != null && b.Id == id);

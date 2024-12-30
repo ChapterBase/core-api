@@ -100,7 +100,7 @@ public class BookService(BookRepository bookRepository)
                 .ToList();
         else
             books = bookRepository
-                .FindAllByStatus(request.Status)
+                .FindAll(request.Status)
                 .Select(ConvertBook)
                 .ToList();
         return new ResponseDto<object>
@@ -151,17 +151,23 @@ public class BookService(BookRepository bookRepository)
         };
     }
 
-    public ResponseDto<object> Search(string query)
+    public ResponseDto<List<BookDto>> Search(string? query, string status)
     {
-        return new ResponseDto<object>
+        IEnumerable<Book> books = status.Equals("ALL", StringComparison.OrdinalIgnoreCase)
+            ? bookRepository.FindAll()
+            : bookRepository.FindAll(status);
+
+        var filteredBooks = string.IsNullOrEmpty(query)
+            ? books
+            : books.Where(b => b.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                               b.ISBN.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                               b.Author.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                               b.Publisher.Contains(query, StringComparison.OrdinalIgnoreCase));
+
+        return new ResponseDto<List<BookDto>>
         {
             Success = true,
-            Data = bookRepository
-                .FindAllByStatus("PUBLISH")
-                .Where(b => (b.Title.Contains(query) || b.Author.Contains(query) || b.Publisher.Contains(query)))
-                .Select(ConvertBook)
-                .ToList()
-
+            Data = filteredBooks.Select(ConvertBook).ToList()
         };
     }
 

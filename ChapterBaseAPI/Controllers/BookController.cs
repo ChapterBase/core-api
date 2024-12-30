@@ -41,9 +41,9 @@ namespace ChapterBaseAPI.Controllers
         }
 
         [HttpGet("Search")]
-        public IActionResult Search([FromQuery] string query)
+        public IActionResult Search([FromQuery] string? query, [FromQuery] string status = "ALL")
         {
-            return Ok(bookService.Search(query));
+            return Ok(bookService.Search(query, status));
         }
     }
 }
